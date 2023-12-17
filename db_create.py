@@ -1,30 +1,34 @@
 import psycopg2
 
-def database_create():
+def database_create(setup_sql, db_name):
     conn = psycopg2.connect(dbname="postgres", user="postgres", password="1234", host="127.0.0.1")
-    cursor = conn.cursor()
+    cr = conn.cursor()
 
-    conn.autocommit = True
-    # команда для создания базы данных metanit
-    sql = "CREATE DATABASE MusicBD"
-
-    # выполняем код sql
-    cursor.execute(sql)
-
-    cursor.close()
-    conn.close()
-
-    print("db create")
-
-
-def database_setup():
-    conn = psycopg2.connect(dbname="musicbd", user="postgres", password="1234", host="127.0.0.1")
-    cursor = conn.cursor()
-
-    cursor.execute("CREATE TABLE IF NOT EXISTS List_of_Authors (id SERIAL PRIMARY KEY, name VARCHAR(50))")
+    try:
+        cr.execute(setup_sql)
+        cr.execute('SELECT create_db(%s)', (db_name,))
+    finally:
+        cr.close()
     conn.commit()
-    cursor.close()
 
-    conn.close()
+def tables_create(setup_sql):
+    conn = psycopg2.connect(dbname="musicdb", user="postgres", password="1234", host="127.0.0.1")
+    cr = conn.cursor()
 
-    print("first table create")
+    try:
+        cr.execute(setup_sql)
+        cr.execute('SELECT create_tables()')
+    finally:
+        cr.close()
+    conn.commit()
+
+def drop_tables(setup_sql):
+    conn = psycopg2.connect(dbname="musicdb", user="postgres", password="1234", host="127.0.0.1")
+    cr = conn.cursor()
+
+    try:
+        cr.execute(setup_sql)
+        cr.execute('SELECT drop_database(%s)', (db_name,))
+    finally:
+        cr.close()
+    conn.commit()
