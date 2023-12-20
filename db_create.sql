@@ -1,9 +1,8 @@
-DROP EXTENSION IF EXISTS dblink;
 CREATE EXTENSION IF NOT EXISTS dblink;
 
 -- function to create database
-DROP FUNCTION IF EXISTS create_db(text, text);
-CREATE OR REPLACE FUNCTION create_db(dbname text)
+DROP FUNCTION IF EXISTS create_db(text, text, text);
+CREATE OR REPLACE FUNCTION create_db(username VARCHAR(255), password VARCHAR(255), dbname text)
 RETURNS VOID AS
     $$
     BEGIN
@@ -12,10 +11,44 @@ RETURNS VOID AS
         ELSE
              PERFORM dblink_exec('user=postgres password=1234 dbname= ' || current_database(),
                     'CREATE DATABASE ' || dbname);
+
+            PERFORM dblink_exec(format('user=postgres password=1234 dbname=%I',  current_database()),
+                format('CREATE USER %I WITH SUPERUSER PASSWORD %L', username, password));
+
+
+            PERFORM dblink_exec(format('user=postgres password=1234 dbname=%I',  current_database()),
+                format('GRANT ALL PRIVILEGES ON DATABASE %I TO %I', dbname, username));
+
+
+            PERFORM dblink_exec(format('user=postgres password=1234 dbname=%I',  dbname),
+                format('GRANT ALL PRIVILEGES ON SCHEMA public TO %I', username));
+
+
+            PERFORM dblink_exec(format('user=postgres password=1234 dbname=%I', dbname),'CREATE EXTENSION IF NOT EXISTS dblink');
         END IF;
     END;
     $$
 LANGUAGE plpgsql;
+
+DROP FUNCTION IF EXISTS update_func_owner();
+CREATE OR REPLACE FUNCTION update_func_owner()
+RETURNS VOID AS $$
+    BEGIN
+        ALTER FUNCTION musicdb.public.update_value_songs(songs_names varchar) OWNER TO users;
+        GRANT EXECUTE ON FUNCTION musicdb.public.update_value_songs(songs_names varchar) TO users;
+
+    END
+$$ LANGUAGE plpgsql;
+
+--update status in songs--
+DROP FUNCTION IF EXISTS update_value_songs(varchar(40));
+CREATE OR REPLACE FUNCTION update_value_songs(songs_names varchar(40))
+RETURNS VOID AS $$
+BEGIN
+    UPDATE  musicdb.public.songs SET status   = 1
+    WHERE songs_name = songs_names;
+END
+$$ LANGUAGE plpgsql;
 
 
 -- function to create all tables
@@ -73,18 +106,14 @@ LANGUAGE plpgsql;
 
 --full drop db doesnt work now--
 DROP FUNCTION IF EXISTS drop_database(text);
-CREATE FUNCTION drop_database(dbname text)
-	RETURNS VOID AS
-	$$
-	BEGIN
-		IF EXISTS (SELECT datname FROM pg_database WHERE datname = dbname) THEN
-			DROP DATABASE dbname;
-		ELSE
-			RAISE NOTICE 'Database does not exist';
-		END IF;
-	END
-	$$
-LANGUAGE plpgsql;
+CREATE OR REPLACE FUNCTION drop_database(dbname text)
+  RETURNS VOID LANGUAGE sql AS
+    $func$
+    --ALTER DATABASE musicdb CONNECTION LIMIT 0;
+    SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'musicdb';
+    SELECT dblink_exec('user=postgres password=1234 dbname = postgres'  , 'DROP DATABASE ' || quote_ident(dbname))
+    $func$;
+
 
 --insert into users tables--
 DROP FUNCTION IF EXISTS insert_user(VARCHAR(20), VARCHAR(30));
@@ -225,4 +254,41 @@ CREATE FUNCTION select_songs()
     END
 	$$
 LANGUAGE plpgsql;
+
+
+--drop all from favorite_songs--
+DROP FUNCTION IF EXISTS delete_all_favorite_songs();
+CREATE OR REPLACE FUNCTION delete_all_favorite_songs()
+RETURNS VOID AS $$
+BEGIN
+    DELETE FROM musicdb.public.favorite_songs;
+END
+$$ LANGUAGE plpgsql;
+
+
+--drop all from songs--
+DROP FUNCTION IF EXISTS delete_all_songs();
+CREATE OR REPLACE FUNCTION delete_all_songs()
+RETURNS VOID AS $$
+BEGIN
+    DELETE FROM musicdb.public.songs;
+END
+$$ LANGUAGE plpgsql;
+
+--delete all from all tables--
+DROP FUNCTION IF EXISTS delete_all();
+CREATE OR REPLACE FUNCTION delete_all()
+RETURNS VOID AS $$
+BEGIN
+    DELETE FROM musicdb.public.albums;
+    DELETE FROM musicdb.public.favorite_songs;
+    DELETE FROM musicdb.public.list_author;
+    DELETE FROM musicdb.public.socialmedia;
+    DELETE FROM musicdb.public.songs;
+    DELETE FROM musicdb.public.users;
+END
+$$ LANGUAGE plpgsql;
+
+
+
 
