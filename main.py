@@ -136,6 +136,18 @@ def return_favorite(setup_sql,user,password,username):
     conn.commit()
     return ans
 
+def search_song(setup_sql,user,password,username,text):
+    conn = psycopg2.connect(dbname="musicdb", user=user, password=password, host="127.0.0.1")
+    cr = conn.cursor()
+    try:
+        cr.execute(setup_sql)
+        cr.execute("SELECT * from musicdb.public.search_songs(%s,%s)", (text,username, ))
+        ans = cr.fetchall()
+    finally:
+        cr.close()
+    conn.commit()
+    return ans
+
 user='users'
 password='123456'
 
@@ -188,7 +200,7 @@ if __name__ == "__main__":
     #print(check_favorite(setup_sql,user,password,'maxim','123','oxxy'))
     #print(check_favorite(setup_sql,user,password,'alex','123','eminem'))
 
-    print(return_favorite(setup_sql,user,password,'maxim'))
+    #print(return_favorite(setup_sql,user,password,'maxim'))
     #print(db_select.print_favorite_songs(setup_sql))
     #add_favorite_song(setup_sql, user, password, 'maxim', '123')
     #print(db_select.print_favorite_songs(setup_sql))
@@ -205,7 +217,7 @@ if __name__ == "__main__":
     #print(db_select.print_socailmedia(setup_sql))
 
 
-
+    #print(search_song(setup_sql,user,password,'maxim',''))
 
 
 

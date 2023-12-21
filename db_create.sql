@@ -372,7 +372,7 @@ $$ LANGUAGE plpgsql;
 
 
 DROP FUNCTION IF EXISTS check_favorite_music(varchar(20),VARCHAR(40),VARCHAR(30));
-CREATE OR REPLACE FUNCTION check_favorite_music(usernames VARCHAR, song_names VARCHAR(40), song_author VARCHAR(30))
+CREATE OR REPLACE FUNCTION check_favorite_music(usernames VARCHAR(20), song_names VARCHAR(40), song_author VARCHAR(30))
 RETURNS BOOLEAN AS $$
 DECLARE
     author_id INTEGER;
@@ -430,5 +430,40 @@ BEGIN
         musicdb.public.list_author ON musicdb.public.songs.from_author = musicdb.public.list_author.id
     WHERE
         musicdb.public.favorite_songs.user_id = user_ids;
+END;
+$$ LANGUAGE plpgsql;
+
+
+DROP FUNCTION IF EXISTS search_songs(VARCHAR(20),varchar(20));
+CREATE OR REPLACE FUNCTION search_songs(text VARCHAR(20),usernames varchar(20) )
+RETURNS TABLE (id integer, song_name VARCHAR, song_author VARCHAR,status boolean) AS $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM list_author WHERE name = text) THEN
+        RETURN QUERY
+        SELECT
+            musicdb.public.songs.id,
+            musicdb.public.songs.songs_name,
+            musicdb.public.list_author.name,
+            check_favorite_music(usernames, songs_name, musicdb.public.list_author.name)
+        FROM
+            musicdb.public.songs
+        JOIN
+            musicdb.public.list_author ON musicdb.public.songs.from_author = musicdb.public.list_author.id
+        WHERE
+            musicdb.public.songs.from_author = (SELECT musicdb.public.list_author.id FROM musicdb.public.list_author WHERE musicdb.public.list_author.name = text);
+    ELSE
+        RETURN QUERY
+        SELECT
+            musicdb.public.songs.id,
+            musicdb.public.songs.songs_name,
+            musicdb.public.list_author.name,
+            check_favorite_music(usernames, songs_name, musicdb.public.list_author.name)
+        FROM
+            musicdb.public.songs
+        JOIN
+            musicdb.public.list_author ON musicdb.public.songs.from_author = musicdb.public.list_author.id
+        WHERE
+            musicdb.public.songs.songs_name LIKE '%' || text || '%';
+    END IF;
 END;
 $$ LANGUAGE plpgsql;

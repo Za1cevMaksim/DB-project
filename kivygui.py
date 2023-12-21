@@ -178,22 +178,26 @@ class DBMusicApp(MDApp):
 
             self.root.ids.searchPage.searchGlayout = MDGridLayout(cols=4, padding=2, size_hint=(1, None))
             self.root.ids.searchPage.searchGlayout.bind(minimum_height=self.root.ids.searchPage.searchGlayout.setter("height"))
-            for i in range(bd["count"]):
-                playbtn = MDIconButton2(icon=self.root.ids.searchPage.isPlaying(), icon_size="32sp",
-                                        on_press=self.root.ids.searchPage.pausePress)
-                nameLab2 = MDLabel(text=bd["name"] + str(i), halign="center")
-                authorLab = MDLabel(text=bd["author"], halign="center")
-                like = MDIconButton2(icon=self.root.ids.searchPage.isLiked(), icon_size="32sp",
-                                     on_press=self.root.ids.searchPage.likePress)
-                self.root.ids.searchPage.searchGlayout.add_widget(playbtn)
-                self.root.ids.searchPage.searchGlayout.add_widget(nameLab2)
-                self.root.ids.searchPage.searchGlayout.add_widget(authorLab)
-                self.root.ids.searchPage.searchGlayout.add_widget(like)
-            self.root.ids.searchPage.scroll = MDScrollView(size_hint=(0.7, None), size=(0.7 * self.root.width, 0.8 * self.root.height - self.root.ids.prev0.height), pos_hint={"x": 0.3,"y": self.root.ids.prev0.height / self.root.height},bar_width=5, bar_pos_y="right", bar_color=(171 / 255, 177 / 255, 177 / 255, 0.42))
-            self.root.ids.searchPage.scroll.add_widget(self.root.ids.searchPage.searchGlayout)
-            self.root.ids.searchFlayout.add_widget(self.root.ids.searchPage.scroll)
+            bd=main.search_song(setup_sql,user,password,logged_user,search_text)
+            for i in range(len(bd)):
+                if bd[i][3]:
+                    playbtn = MDIconButton2(icon=self.root.ids.searchPage.isPlaying(), icon_size="32sp",
+                                            on_press=self.root.ids.searchPage.pausePress)
+                    nameLab2 = MDLabel(text=bd[i][1], halign="center")
+                    authorLab = MDLabel(text=bd[i][2], halign="center")
+                    like = MDIconButton2(icon="cards-heart", icon_size="32sp",
+                                         on_press=self.root.ids.searchPage.likePress)
+                    self.root.ids.searchPage.searchGlayout.add_widget(playbtn)
+                    self.root.ids.searchPage.searchGlayout.add_widget(nameLab2)
+                    self.root.ids.searchPage.searchGlayout.add_widget(authorLab)
+                    self.root.ids.searchPage.searchGlayout.add_widget(like)
+            if "scroll2" in self.root.ids.keys():
+                self.root.ids.searchFlayout.remove_widget(self.root.ids.scroll2)
+            self.root.ids.searchPage.scroll2 = MDScrollView(size_hint=(0.7, None), size=(0.7 * self.root.width, 0.8 * self.root.height - self.root.ids.prev0.height), pos_hint={"x": 0.3,"y": self.root.ids.prev0.height / self.root.height},bar_width=5, bar_pos_y="right", bar_color=(171 / 255, 177 / 255, 177 / 255, 0.42))
+            self.root.ids["scroll2"] = self.root.ids.searchPage.scroll2
+            self.root.ids.searchPage.scroll2.add_widget(self.root.ids.searchPage.searchGlayout)
+            self.root.ids.searchFlayout.add_widget(self.root.ids.searchPage.scroll2)
 
-            pass
     def build(self):
         self.favorite=4
         self.theme_cls.theme_style="Dark"
