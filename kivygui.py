@@ -14,12 +14,14 @@ from kivy.metrics import dp,sp
 from kivy.core.audio import SoundLoader
 from kivy.core.audio.audio_ffpyplayer import SoundFFPy
 
+import db_create
 #bd imports
 import db_insert
 import db_select
 import get_song
 import other_func
 
+db_name="musicdb"
 user='users'
 password='123456'
 
@@ -297,6 +299,17 @@ class DBMusicApp(MDApp):
         self.theme_cls.theme_style="Dark"
         self.theme_cls.primary_palette="BlueGray"
         return Builder.load_file("design.kv")
+
 if __name__=='__main__':
+    list_author = ["eminem", "oxxxymiron", "pink floud"]
+
+    if not(other_func.is_db_exists(db_name)):
+        print('Create')
+        db_create.database_create(setup_sql, user, password, db_name)
+        db_create.tables_create(setup_sql, user, password)
+        db_insert.use_trigger()
+        for i in list_author:
+            get_song.fin2(i,setup_sql,user,password)
+
     app=DBMusicApp()
     app.run()

@@ -41,14 +41,14 @@ RETURNS VOID AS
     BEGIN
         CREATE TABLE IF NOT EXISTS users(
                                     id SERIAL PRIMARY KEY,
-                                    username varchar(20) NOT NULL UNIQUE,
-                                    password varchar(30) NOT NULL,
+                                    username varchar(60) NOT NULL UNIQUE,
+                                    password varchar(60) NOT NULL,
                                     theme text default 'Dark'
                                 );
 
         CREATE TABLE IF NOT EXISTS list_author(
                                     id SERIAL PRIMARY KEY,
-                                    name varchar(30) NOT NULL UNIQUE
+                                    name varchar(60) NOT NULL UNIQUE
                                 );
 
 
@@ -62,7 +62,7 @@ RETURNS VOID AS
 
         CREATE TABLE IF NOT EXISTS songs(
             id SERIAL PRIMARY KEY,
-            songs_name varchar(40) NOT NULL,
+            songs_name varchar(60) NOT NULL,
             link text,
             from_author integer NOT NULL,
             FOREIGN KEY (from_author) REFERENCES list_author (id) ON DELETE CASCADE
@@ -91,8 +91,8 @@ CREATE OR REPLACE FUNCTION drop_database(dbname text)
 
 
 --insert into users tables--
-DROP FUNCTION IF EXISTS insert_user(VARCHAR(20), VARCHAR(30));
-CREATE OR REPLACE FUNCTION insert_user(user_name VARCHAR(20), pass_word VARCHAR(30))
+DROP FUNCTION IF EXISTS insert_user(VARCHAR(60), VARCHAR(60));
+CREATE OR REPLACE FUNCTION insert_user(user_name VARCHAR(60), pass_word VARCHAR(60))
     RETURNS VOID AS
     $$
     BEGIN
@@ -103,8 +103,8 @@ LANGUAGE plpgsql;
 
 
 --insert into users list_author--
-DROP FUNCTION IF EXISTS insert_list_author(VARCHAR(30));
-CREATE OR REPLACE FUNCTION insert_list_author(names VARCHAR(30))
+DROP FUNCTION IF EXISTS insert_list_author(VARCHAR(60));
+CREATE OR REPLACE FUNCTION insert_list_author(names VARCHAR(60))
     RETURNS VOID AS
     $$
     BEGIN
@@ -115,8 +115,8 @@ LANGUAGE plpgsql;
 
 
 --insert into users favourite_songs--
-DROP FUNCTION IF EXISTS insert_favourite_songs(VARCHAR(40),integer);
-CREATE OR REPLACE FUNCTION insert_favourite_songs(song_names VARCHAR(40), user_ids integer)
+DROP FUNCTION IF EXISTS insert_favourite_songs(VARCHAR(60),integer);
+CREATE OR REPLACE FUNCTION insert_favourite_songs(song_names VARCHAR(60), user_ids integer)
     RETURNS VOID AS
     $$
     BEGIN
@@ -137,8 +137,8 @@ CREATE OR REPLACE FUNCTION insert_socialmedia(ids integer, instagrams text, twit
 LANGUAGE plpgsql;
 
 --insert into users songs--
-DROP FUNCTION IF EXISTS insert_songs(varchar(40),text,integer);
-CREATE OR REPLACE FUNCTION insert_songs(song_names varchar(40), links text, from_authors integer)
+DROP FUNCTION IF EXISTS insert_songs(varchar(60),text,integer);
+CREATE OR REPLACE FUNCTION insert_songs(song_names varchar(60), links text, from_authors integer)
     RETURNS VOID AS
     $$
     BEGIN
@@ -200,7 +200,7 @@ LANGUAGE plpgsql;
 --print for songs tables--
 DROP FUNCTION IF EXISTS select_songs();
 CREATE FUNCTION select_songs()
-    RETURNS TABLE(id integer, songs_name varchar(40), link text, author integer) AS
+    RETURNS TABLE(id integer, songs_name varchar(60), link text, author integer) AS
     $$
     BEGIN
         RETURN QUERY
@@ -243,8 +243,8 @@ END
 $$ LANGUAGE plpgsql;
 
 --find id author with name--
-DROP FUNCTION IF EXISTS find_author_id(varchar(30));
-CREATE OR REPLACE FUNCTION find_author_id(names varchar(30) )
+DROP FUNCTION IF EXISTS find_author_id(varchar(60));
+CREATE OR REPLACE FUNCTION find_author_id(names varchar(60) )
 RETURNS integer AS $$
 DECLARE
     author_id INTEGER;
@@ -258,8 +258,8 @@ $$ LANGUAGE plpgsql;
 
 
 --find id user with name--
-DROP FUNCTION IF EXISTS find_user_id(varchar(20));
-CREATE OR REPLACE FUNCTION find_user_id(names varchar(20))
+DROP FUNCTION IF EXISTS find_user_id(varchar(60));
+CREATE OR REPLACE FUNCTION find_user_id(names varchar(60))
 RETURNS integer AS $$
 DECLARE
     user_id INTEGER;
@@ -272,8 +272,8 @@ END
 $$ LANGUAGE plpgsql;
 
 --delete author from list_author--
-DROP FUNCTION IF EXISTS delete_author(varchar(30));
-CREATE OR REPLACE FUNCTION delete_author(author_names VARCHAR(30))
+DROP FUNCTION IF EXISTS delete_author(varchar(60));
+CREATE OR REPLACE FUNCTION delete_author(author_names VARCHAR(60))
 RETURNS VOID AS $$
 BEGIN
     DELETE FROM musicdb.public.list_author
@@ -282,8 +282,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-DROP FUNCTION IF EXISTS delete_user(varchar(20));
-CREATE OR REPLACE FUNCTION delete_user(usernames VARCHAR(20))
+--delete user from users--
+DROP FUNCTION IF EXISTS delete_user(varchar(60));
+CREATE OR REPLACE FUNCTION delete_user(usernames VARCHAR(60))
 RETURNS VOID AS $$
 BEGIN
     DELETE FROM musicdb.public.users
@@ -293,8 +294,8 @@ $$ LANGUAGE plpgsql;
 
 
 --change users theme--
-DROP FUNCTION IF EXISTS toggle_theme(varchar(20));
-CREATE OR REPLACE FUNCTION toggle_theme(user_names VARCHAR(20))
+DROP FUNCTION IF EXISTS toggle_theme(varchar(60));
+CREATE OR REPLACE FUNCTION toggle_theme(user_names VARCHAR(60))
 RETURNS VOID AS $$
 BEGIN
     UPDATE musicdb.public.users
@@ -305,8 +306,8 @@ $$ LANGUAGE plpgsql;
 
 
 
-DROP FUNCTION IF EXISTS add_favorite_song(varchar(20),VARCHAR(30),VARCHAR(30));
-CREATE OR REPLACE FUNCTION add_favorite_song(usernames VARCHAR(20), song VARCHAR(30),author VARCHAR(30))
+DROP FUNCTION IF EXISTS add_favorite_song(varchar(60),VARCHAR(60),VARCHAR(60));
+CREATE OR REPLACE FUNCTION add_favorite_song(usernames VARCHAR(60), song VARCHAR(60),author VARCHAR(60))
 RETURNS VOID AS $$
 DECLARE
     user_ids INTEGER;
@@ -338,8 +339,8 @@ END
 $$ LANGUAGE plpgsql;
 
 --update socialmedia--
-DROP FUNCTION IF EXISTS update_socialmedia(varchar(30),text,text,text);
-CREATE OR REPLACE FUNCTION update_socialmedia(author_name VARCHAR(30), instagrams text, twitters text, any_others text)
+DROP FUNCTION IF EXISTS update_socialmedia(varchar(60),text,text,text);
+CREATE OR REPLACE FUNCTION update_socialmedia(author_name VARCHAR(60), instagrams text, twitters text, any_others text)
 RETURNS VOID AS $$
 DECLARE
     author_ids INTEGER;
@@ -360,8 +361,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-DROP FUNCTION IF EXISTS check_favorite_music(varchar(20),VARCHAR(40),VARCHAR(30));
-CREATE OR REPLACE FUNCTION check_favorite_music(usernames VARCHAR(20), song_names VARCHAR(40), song_author VARCHAR(30))
+DROP FUNCTION IF EXISTS check_favorite_music(varchar(60),VARCHAR(60),VARCHAR(60));
+CREATE OR REPLACE FUNCTION check_favorite_music(usernames VARCHAR(60), song_names VARCHAR(60), song_author VARCHAR(60))
 RETURNS BOOLEAN AS $$
 DECLARE
     author_id INTEGER;
@@ -396,8 +397,8 @@ $$ LANGUAGE plpgsql;
 
 
 
-DROP FUNCTION IF EXISTS get_user_favorite_songs(VARCHAR(20));
-CREATE OR REPLACE FUNCTION get_user_favorite_songs(user_name VARCHAR(20))
+DROP FUNCTION IF EXISTS get_user_favorite_songs(VARCHAR(60));
+CREATE OR REPLACE FUNCTION get_user_favorite_songs(user_name VARCHAR(60))
 RETURNS TABLE (song_name VARCHAR, author_name VARCHAR) AS $$
 DECLARE
     user_ids INTEGER;
@@ -423,11 +424,12 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-DROP FUNCTION IF EXISTS search_songs(VARCHAR(20),varchar(20));
-CREATE OR REPLACE FUNCTION search_songs(text VARCHAR(20),usernames varchar(20) )
+DROP FUNCTION IF EXISTS search_songs(VARCHAR(60),varchar(60));
+CREATE OR REPLACE FUNCTION search_songs(text VARCHAR(60),usernames varchar(60) )
 RETURNS TABLE (id integer, song_name VARCHAR, song_author VARCHAR,status boolean) AS $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM list_author WHERE name = text) THEN
+    text := LOWER(text);
+    IF EXISTS (SELECT 1 FROM list_author WHERE LOWER(name) = text) THEN
         RETURN QUERY
         SELECT
             musicdb.public.songs.id,
@@ -439,7 +441,7 @@ BEGIN
         JOIN
             musicdb.public.list_author ON musicdb.public.songs.from_author = musicdb.public.list_author.id
         WHERE
-            musicdb.public.songs.from_author = (SELECT musicdb.public.list_author.id FROM musicdb.public.list_author WHERE musicdb.public.list_author.name = text);
+            musicdb.public.songs.from_author = (SELECT musicdb.public.list_author.id FROM musicdb.public.list_author WHERE LOWER(musicdb.public.list_author.name) = text);
     ELSE
         RETURN QUERY
         SELECT
@@ -452,13 +454,13 @@ BEGIN
         JOIN
             musicdb.public.list_author ON musicdb.public.songs.from_author = musicdb.public.list_author.id
         WHERE
-            musicdb.public.songs.songs_name LIKE '%' || text || '%';
+            LOWER(musicdb.public.songs.songs_name) LIKE '%' || text || '%';
     END IF;
 END;
 $$ LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS search_songs_download(VARCHAR(40),varchar(30));
-CREATE OR REPLACE FUNCTION search_songs_download(song VARCHAR(40),author varchar(30) )
+DROP FUNCTION IF EXISTS search_songs_download(VARCHAR(60),varchar(60));
+CREATE OR REPLACE FUNCTION search_songs_download(song VARCHAR(60),author varchar(60) )
 RETURNS TABLE (song_name VARCHAR, song_author VARCHAR,link text) AS $$
 declare
     author_ids integer;
@@ -478,4 +480,17 @@ BEGIN
         WHERE
             musicdb.public.songs.songs_name=song and musicdb.public.songs.from_author=author_ids;
     END;
+$$ LANGUAGE plpgsql;
+
+DROP FUNCTION IF EXISTS check_db_exists(TEXT);
+CREATE OR REPLACE FUNCTION check_db_exists(db_name TEXT) RETURNS BOOLEAN
+AS
+$$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_database WHERE datname = db_name) THEN
+        RETURN TRUE;
+    ELSE
+        RETURN FALSE;
+    END IF;
+END
 $$ LANGUAGE plpgsql;

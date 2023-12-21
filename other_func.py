@@ -141,15 +141,21 @@ def download_song(setup_sql,user,password,song,author):
     conn.commit()
     return ans
 
-user='users'
-password='123456'
+def is_db_exists(dbname):
+    connect = None
+    try:
+        connect = psycopg2.connect(dbname="postgres", host="127.0.0.1", user="postgres", password="1234")
+        connect.autocommit = True
+        with connect.cursor() as cur:
+            cur.execute("select check_db_exists(%s::varchar)", (dbname,))
+            exists = cur.fetchone()
+            return exists if exists is None else exists[0]
+    finally:
+        if connect:
+            connect.close()
 
 
-with open('db_create.sql', 'r') as f:
-    setup_sql = f.read()
-db_name="musicdb"
-
-    #create db
+#create db
 #db_create.database_create(setup_sql,user, password, db_name) #database create
 #db_create.tables_create(setup_sql,user,password) #create table
 #db_insert.use_trigger()
