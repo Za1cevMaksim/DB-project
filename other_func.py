@@ -24,27 +24,9 @@ def drop_all(setup_sql,user,password):
         cr.close()
     conn.commit()
 
-def update_songs_status(setup_sql,song_name,users,password):
-    conn = psycopg2.connect(dbname="musicdb", user=users, password=password, host="127.0.0.1")
-    cr = conn.cursor()
-    try:
-        cr.execute(setup_sql)
-        cr.execute("SELECT update_value_songs(%s)", (song_name,))
-    finally:
-        cr.close()
-    conn.commit()
 
-def update_user_right(setup_sql):
-    conn = psycopg2.connect(dbname="musicdb", user="postgres", password="1234", host="127.0.0.1")
-    cr = conn.cursor()
-    try:
-        cr.execute(setup_sql)
-        cr.execute("SELECT update_func_owner()",())
-    finally:
-        cr.close()
-    conn.commit()
 
-def find_author_id(setup_sql,user,password,name):
+def find_user_id(setup_sql,user,password,name):
     conn = psycopg2.connect(dbname="musicdb", user=user, password=password, host="127.0.0.1")
     cr = conn.cursor()
     try:
@@ -151,16 +133,16 @@ def search_song(setup_sql,user,password,username,text):
 user='users'
 password='123456'
 
-if __name__ == "__main__":
-    with open('db_create.sql', 'r') as f:
-        setup_sql = f.read()
-    db_name="musicdb"
+
+with open('db_create.sql', 'r') as f:
+    setup_sql = f.read()
+db_name="musicdb"
 
     #create db
     #db_create.database_create(setup_sql,user, password, db_name) #database create
     #db_create.tables_create(setup_sql,user,password) #create table
     #db_insert.use_trigger()
-    #update_user_right(setup_sql)
+
 
     # all insert
     #db_insert.insert_users(setup_sql,'alex','1234') #add user

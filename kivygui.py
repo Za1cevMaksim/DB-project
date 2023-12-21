@@ -15,7 +15,7 @@ from kivy.metrics import dp,sp
 #bd imports
 import db_insert
 import db_select
-import main
+import other_func
 
 user='users'
 password='123456'
@@ -48,17 +48,17 @@ class LoginPage(MDScreen):
 class RegPage(MDScreen):
 
     login = ObjectProperty(None)
-    password = ObjectProperty(None)
+    password_users = ObjectProperty(None)
     def addToBase(self):
         login = self.reg_login.text
-        password = self.reg_pass.text
+        password_users = self.reg_pass.text
         all_users=db_select.print_users(setup_sql)
         for i in range(0,len(all_users)):
             if all_users[i][0]==login:
                 return False
 
-        if login!='' and password!='':
-            db_insert.insert_users(setup_sql, login, password)
+        if login!='' and password_users!='':
+            db_insert.insert_users(setup_sql, user,password, login,password_users)
             return True
         return False
 class MDIconButton2(MDIconButton):

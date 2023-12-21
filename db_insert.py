@@ -1,17 +1,17 @@
 import psycopg2
 
-def insert_users(setup_sql,login,password):
-    conn = psycopg2.connect(dbname="musicdb", user="postgres", password="1234", host="127.0.0.1")
+def insert_users(setup_sql,user,password,login,password_users):
+    conn = psycopg2.connect(dbname="musicdb", user=user, password=password, host="127.0.0.1")
     cr = conn.cursor()
     try:
         cr.execute(setup_sql)
-        cr.execute("SELECT insert_user(%s, %s)", (login, password,))
+        cr.execute("SELECT insert_user(%s, %s)", (login, password_users,))
     finally:
         cr.close()
     conn.commit()
 
-def insert_list_author(setup_sql,name):
-    conn = psycopg2.connect(dbname="musicdb", user="postgres", password="1234", host="127.0.0.1")
+def insert_list_author(setup_sql,user,password,name):
+    conn = psycopg2.connect(dbname="musicdb", user=user, password=password, host="127.0.0.1")
     cr = conn.cursor()
     try:
         cr.execute(setup_sql)
@@ -21,7 +21,7 @@ def insert_list_author(setup_sql,name):
     conn.commit()
 
 
-def update_socialmedia(setup_sql,author_name,*args):
+def update_socialmedia(setup_sql,user,password,author_name,*args):
     instagram='NULL'
     twitter='NULL'
     any_other='NULL'
@@ -33,7 +33,7 @@ def update_socialmedia(setup_sql,author_name,*args):
         else:
             any_other=i
 
-    conn = psycopg2.connect(dbname="musicdb", user="postgres", password="1234", host="127.0.0.1")
+    conn = psycopg2.connect(dbname="musicdb", user=user, password=password, host="127.0.0.1")
     cr = conn.cursor()
     try:
         cr.execute(setup_sql)
@@ -42,10 +42,10 @@ def update_socialmedia(setup_sql,author_name,*args):
         cr.close()
     conn.commit()
 
-def insert_songs(setup_sql,songs_name,author_id,link):
+def insert_songs(setup_sql,user,password,songs_name,author_id,link):
     link='NULL'
 
-    conn = psycopg2.connect(dbname="musicdb", user="postgres", password="1234", host="127.0.0.1")
+    conn = psycopg2.connect(dbname="musicdb", user=user, password=password, host="127.0.0.1")
     cr = conn.cursor()
     try:
         cr.execute(setup_sql)

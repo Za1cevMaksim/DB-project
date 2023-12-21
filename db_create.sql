@@ -30,25 +30,7 @@ RETURNS VOID AS
     $$
 LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS update_func_owner();
-CREATE OR REPLACE FUNCTION update_func_owner()
-RETURNS VOID AS $$
-    BEGIN
-        ALTER FUNCTION musicdb.public.update_value_songs(songs_names varchar) OWNER TO users;
-        GRANT EXECUTE ON FUNCTION musicdb.public.update_value_songs(songs_names varchar) TO users;
 
-    END
-$$ LANGUAGE plpgsql;
-
---update status in songs--
-DROP FUNCTION IF EXISTS update_value_songs(varchar(40));
-CREATE OR REPLACE FUNCTION update_value_songs(songs_names varchar(40))
-RETURNS VOID AS $$
-BEGIN
-    UPDATE  musicdb.public.songs SET status   = 1
-    WHERE songs_name = songs_names;
-END
-$$ LANGUAGE plpgsql;
 
 
 -- function to create all tables
