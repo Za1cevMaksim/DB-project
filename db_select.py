@@ -24,17 +24,7 @@ def print_list_author(setup_sql):
     conn.commit()
     return ans
 
-def print_albums(setup_sql):
-    conn = psycopg2.connect(dbname="musicdb", user="postgres", password="1234", host="127.0.0.1")
-    cr = conn.cursor()
-    try:
-        cr.execute(setup_sql)
-        cr.execute('SELECT * from musicdb.public.select_albums()')
-        ans=cr.fetchall()
-    finally:
-        cr.close()
-    conn.commit()
-    return ans
+
 
 def print_favorite_songs(setup_sql):
     conn = psycopg2.connect(dbname="musicdb", user="postgres", password="1234", host="127.0.0.1")

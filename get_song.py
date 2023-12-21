@@ -43,5 +43,7 @@ def fin(song_name):
     res=take_music(song_name)
     for i in range(0,len(res)):
         download_song(res[i]['url'],'D:\download\\' + res[i]['title']+'.mp3')
+        print(res)
 
 
+fin("Lose Yourself")

@@ -1,0 +1,558 @@
+<Button>
+    font_size: 24
+    background_normal:''
+    background_color: (0.5,0.35,0.4,1)
+#<MDIconButton>
+#    size_hint:(0.1,0.1)
+<MDRoundFlatButton>
+    font_size: 16
+    #background_normal:''
+    #background_color: (0.5,0.35,0.4,1)
+<InputText>
+    multiline: False
+    pos_hint: {"center_x": 0.5}
+    size_hint: (None,None)
+    height:35
+    width:250
+MDFloatLayout:
+	MDScreenManager:
+		id:manager
+		LoginPage:
+			id:logPage
+			name:"login"
+			login:login
+			password:password
+			canvas.before:
+				Color:
+					rgba:(107/255,107/255,107/255,0.42)
+				Rectangle
+					pos:self.pos
+					size:self.size
+			BoxLayout:
+				orientation: "vertical"
+				size: root.width,root.height
+				padding: 30
+				spacing: 20
+				Label:
+					background_color: (107/255,107/255,107/255,0)
+					color:(94/255,240/255,72/255,0.94)
+					outline_width:3
+					outline_color:(244/255,217/255,19/255,0.96)
+					font_size:72
+					bold:True
+					italic: True
+					text:"DBMusic"
+					canvas.before:
+						Color:
+							rgba: self.background_color
+						Rectangle:
+							size: self.size
+							pos:self.pos
+
+				MDTextField:
+					id: login
+					hint_text: "Логин"
+					icon_right: "account"
+					size_hint: (None,None)
+					width: 250
+					height:35
+					pos_hint:{"center_x":0.5}
+				MDTextField:
+					id:password
+					hint_text: "Пароль"
+					icon_right: "eye-off"
+					size_hint: (None,None)
+					width: 250
+					height:35
+					pos_hint:{"center_x":0.5}
+					password: True
+
+				MDRoundFlatButton:
+					id:logBut
+					text: "Войти"
+					on_press:
+						if root.ids.logPage.logIn(): root.ids.manager.current="main"
+					text_color: 91/255, 240/255, 108/255, 0.94
+					pos_hint: {"center_x": 0.5}
+				MDRoundFlatButton:
+					text:"Зарегистрироваться"
+					on_press:root.ids.manager.current="reg"
+					text_color: 78/255, 145/255, 240/255, 0.94
+					pos_hint: {"center_x": 0.5}
+		RegPage:
+			name:"reg"
+			id:regPage
+			reg_login:reg_login
+			reg_pass:reg_pass
+			canvas.before:
+				Color:
+					rgba:(107/255,107/255,107/255,0.42)
+				Rectangle
+					pos:self.pos
+					size:self.size
+			BoxLayout:
+				orientation: "vertical"
+				size: root.width,root.height
+				padding: 30
+				spacing: 20
+				Label:
+					background_color: (107/255,107/255,107/255,0)
+					color:(94/255,240/255,72/255,0.94)
+					outline_width:3
+					outline_color:(244/255,217/255,19/255,0.96)
+					font_size:72
+					bold:True
+					italic: True
+					text:"DBMusic"
+					canvas.before:
+						Color:
+							rgba: self.background_color
+						Rectangle:
+							size: self.size
+							pos:self.pos
+
+				MDTextField:
+					id: reg_login
+					hint_text: "Логин"
+					icon_right: "account"
+					size_hint: (None,None)
+					width: 250
+					height:35
+					pos_hint:{"center_x":0.5}
+				MDTextField:
+					id:reg_pass
+					hint_text: "Пароль"
+					icon_right: "eye-off"
+					size_hint: (None,None)
+					width: 250
+					height:35
+					pos_hint:{"center_x":0.5}
+					password: True
+
+				MDRoundFlatButton:
+					id:logBut
+					text: "Регистрация"
+					on_press:
+						if root.ids.regPage.addToBase(): root.ids.manager.current="login"
+					text_color: 91/255, 240/255, 108/255, 0.94
+					pos_hint: {"center_x": 0.5}
+				MDRoundFlatButton:
+					text: "Вернуться назад"
+					text_color: 188/255, 71/255, 71/255, 0.74
+					on_press:root.ids.manager.current="login"
+					pos_hint:{"center_x":0.5}
+		MainPage:
+			name:"main"
+			id:mainPage
+			MDFloatLayout:
+				size:root.width,root.height
+				#left panel with menu
+				MDGridLayout:
+				    id:glayout
+				MDLabel:
+					pos_hint:{"Top":1,"x":0,"y":prev0.height/root.height}
+					size_hint:(0.25,1-prev0.height/root.height)
+					md_bg_color:(130/255,130/255,130/255,0.42)
+				#кнопка настроек
+				MDIconButton2:
+					icon:"cog-outline"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:root.ids.manager.current="opt"
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Настройки"
+					halign:"left"
+					font_size:20
+					on_press:root.ids.manager.current="opt"
+				#кнопка плейлистов
+				MDIconButton2:
+					icon:"music-box-multiple-outline"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":2*prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":2*prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Плейлисты"
+					halign:"left"
+					font_size:20
+
+				#right panel with playlists
+				MDLabel:
+					pos_hint:{"Top":1,"x":0.25,"y":prev0.height/root.height}
+					size_hint:(0.75,1-prev0.height/root.height)
+					md_bg_color:(71/255,71/255,71/255,0.42)
+
+				MDLabel:
+					id: label1
+					text: "Плейлисты"
+					font_size:48
+					pos_hint:{"x":0.3,"y":0.8}
+					size_hint:(0.7,0.2)
+				MDIconButton2:
+					pos_hint:{"Top":0.8,"x":0.3,"y":0.6}
+					icon:"cards-heart"
+					icon_size:"50sp"
+					md_bg_color:(1,96/255,183/255,1)
+					size_hint:(0.2*min(root.height,root.width)/root.width,0.2*min(root.width,root.height)/root.height)
+					on_press:app.toPlaylist(self)
+				MDLabel:
+					pos_hint:{"Top":0.8,"x":0.3,"y":0.54}
+					text:f"Любимые\n{app.favorite} треков"
+					halign:"left"
+					font_size:18
+					size_hint:(0.2*min(root.height,root.width)/root.width,0.05)
+
+				#bottom panel with player
+				MDLabel:
+					pos_hint:{"Bottom":1}
+					size_hint:(1,prev0.height/root.height)
+					md_bg_color:(107/255,107/255,107/255,0.42)
+				MDIconButton2:
+					id: prev0
+					icon:"chevron-left-circle-outline"
+					icon_size:"48sp"
+					on_press:app.prevPress(self)
+					pos_hint:{"x":0,"Bottom":1}
+				MDIconButton2:
+				    id: play0
+					icon: "arrow-right-drop-circle-outline"
+					icon_size:"48sp"
+					on_press: app.pausePress(self)
+					pos_hint:{"x":self.width/root.width,"Bottom":1}
+				MDIconButton2:
+                    id: next0
+					icon:"chevron-right-circle-outline"
+					icon_size:"48sp"
+					on_press:app.nextPress(self)
+					pos_hint:{"x":2*self.width/root.width,"Bottom":1}
+				MDIconButton2:
+				    id: like0
+					icon:"cards-heart-outline"
+					icon_size:"48sp"
+					on_press:app.likePress(self)
+					pos_hint:{"x":6*self.width/root.width,"Bottom":1}
+				MDIconButton2:
+				    id: shuffle0
+					icon:"shuffle-variant"
+					icon_size:"48sp"
+					on_press:app.shufflePress(self)
+					pos_hint:{"x":3*self.width/root.width,"Bottom":1}
+				MDLabel:
+				    id: text0
+					pos_hint:{"Bottom":1,"x":4*prev0.width/root.width}
+					size_hint:(1-3*prev0.width/root.width,prev0.height/root.height)
+					text:""
+					halign:"left"
+
+		OptionsPage:
+			name:"opt"
+			id: optPage
+			MDFloatLayout:
+				size:root.width,root.height
+
+				#left panel with menu
+				MDLabel:
+					pos_hint:{"Top":1,"x":0,"y":prev0.height/root.height}
+					size_hint:(0.25,1-prev0.height/root.height)
+					md_bg_color:(130/255,130/255,130/255,0.42)
+				MDIconButton2:
+					icon:"cog-outline"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Настройки"
+					halign:"left"
+					font_size:20
+				#кнопка плейлистов
+				MDIconButton2:
+					icon:"music-box-multiple-outline"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":2*prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:root.ids.manager.current="main"
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":2*prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Плейлисты"
+					halign:"left"
+					font_size:20
+					on_press:root.ids.manager.current="main"
+				#right panel with playlists
+				MDLabel:
+					pos_hint:{"Top":1,"x":0.25,"y":prev0.height/root.height}
+					size_hint:(0.75,1-prev0.height/root.height)
+					md_bg_color:(71/255,71/255,71/255,0.42)
+				MDLabel:
+					id: label1
+					text: "Настройки"
+					font_size:48
+					pos_hint:{"x":0.3,"y":0.8}
+					size_hint:(0.7,0.2)
+
+				#bottom panel with player
+				MDLabel:
+					pos_hint:{"Bottom":1}
+					size_hint:(1,prev0.height/root.height)
+					md_bg_color:(107/255,107/255,107/255,0.42)
+				MDIconButton2:
+				    id: prev1
+					icon:"chevron-left-circle-outline"
+					icon_size:"48sp"
+					on_press:app.prevPress(self)
+					pos_hint:{"x":0,"Bottom":1}
+				MDIconButton2:
+					id: play1
+					icon: "arrow-right-drop-circle-outline"
+					icon_size:"48sp"
+					on_press:  app.pausePress(self)
+					pos_hint:{"x":self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: next1
+					icon:"chevron-right-circle-outline"
+					icon_size:"48sp"
+					on_press:app.nextPress(self)
+					pos_hint:{"x":2*self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: like1
+					icon:"cards-heart-outline"
+					icon_size:"48sp"
+					on_press:app.likePress(self)
+					pos_hint:{"x":6*self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: shuffle1
+					icon:"shuffle-variant"
+					icon_size:"48sp"
+					on_press:app.shufflePress(self)
+					pos_hint:{"x":3*self.width/root.width,"Bottom":1}
+				MDLabel:
+					id: text1
+					pos_hint:{"Bottom":1,"x":4*prev0.width/root.width}
+					size_hint:(1-3*prev0.width/root.width,prev0.height/root.height)
+					text:""
+					halign:"left"
+		PlaylistPage:
+			name:"play"
+			id:playPage
+			MDFloatLayout:
+				size:root.width,root.height
+				id:flayout
+				#left panel with menu
+
+				MDLabel:
+					pos_hint:{"Top":1,"x":0,"y":prev0.height/root.height}
+					size_hint:(0.25,1-prev0.height/root.height)
+					md_bg_color:(130/255,130/255,130/255,0.42)
+				MDIconButton2:
+					icon:"cog-outline"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:root.ids.manager.current="opt"
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Настройки"
+					halign:"left"
+					font_size:20
+					on_press:root.ids.manager.current="opt"
+				#кнопка плейлистов
+				MDIconButton2:
+					icon:"music-box-multiple-outline"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":2*prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:root.ids.manager.current="main"
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":2*prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Плейлисты"
+					halign:"left"
+					font_size:20
+					on_press:root.ids.manager.current="main"
+				#right panel with playlists
+
+				MDLabel:
+					pos_hint:{"Top":1,"x":0.25,"y":prev0.height/root.height}
+					size_hint:(0.75,1-prev0.height/root.height)
+					md_bg_color:(71/255,71/255,71/255,0.42)
+				MDLabel:
+					text: "Любимые"
+					font_size:48
+					pos_hint:{"x":0.3,"y":0.8}
+					size_hint:(0.7,0.1)
+				MDTextField:
+				    id:search_text
+					size_hint:(0.65,0.1)
+					pos_hint:{"x":0.35,"y":0.9}
+					multiline:False
+				MDIconButton2:
+					icon:"magnify"
+					size_hint:(0.05,0.1)
+					pos_hint:{"x":0.3,"y":0.9}
+					on_release:app.search_by_text(search_text.text)
+
+
+				#bottom panel with player
+				MDLabel:
+					pos_hint:{"Bottom":1}
+					size_hint:(1,prev0.height/root.height)
+					md_bg_color:(107/255,107/255,107/255,0.42)
+				MDIconButton2:
+					id: prev2
+					icon:"chevron-left-circle-outline"
+					icon_size:"48sp"
+					on_press:app.prevPress(self)
+					pos_hint:{"x":0,"Bottom":1}
+				MDIconButton2:
+					id: play2
+					icon: "arrow-right-drop-circle-outline"
+					icon_size:"48sp"
+					on_press:  app.pausePress(self)
+					pos_hint:{"x":self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: next2
+					icon:"chevron-right-circle-outline"
+					icon_size:"48sp"
+					on_press:app.nextPress(self)
+					pos_hint:{"x":2*self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: like2
+					icon:"cards-heart-outline"
+					icon_size:"48sp"
+					on_press:app.likePress(self)
+					pos_hint:{"x":6*self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: shuffle2
+					icon:"shuffle-variant"
+					icon_size:"48sp"
+					on_press:app.shufflePress(self)
+					pos_hint:{"x":3*self.width/root.width,"Bottom":1}
+				MDLabel:
+					id: text2
+					pos_hint:{"Bottom":1,"x":4*prev0.width/root.width}
+					size_hint:(1-3*prev0.width/root.width,prev0.height/root.height)
+					text:""
+					halign:"left"
+	    SearchPage:
+	        name:"search"
+	        id:searchPage
+			MDFloatLayout:
+				size:root.width,root.height
+				id:searchFlayout
+				#left panel with menu
+
+				MDLabel:
+					pos_hint:{"Top":1,"x":0,"y":prev0.height/root.height}
+					size_hint:(0.25,1-prev0.height/root.height)
+					md_bg_color:(130/255,130/255,130/255,0.42)
+				MDIconButton2:
+					icon:"cog-outline"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:root.ids.manager.current="opt"
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Настройки"
+					halign:"left"
+					font_size:20
+					on_press:root.ids.manager.current="opt"
+				#кнопка плейлистов
+				MDIconButton2:
+					icon:"music-box-multiple-outline"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":2*prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:root.ids.manager.current="main"
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":2*prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Плейлисты"
+					halign:"left"
+					font_size:20
+					on_press:root.ids.manager.current="main"
+				#right panel with playlists
+
+				MDLabel:
+					pos_hint:{"Top":1,"x":0.25,"y":prev0.height/root.height}
+					size_hint:(0.75,1-prev0.height/root.height)
+					md_bg_color:(71/255,71/255,71/255,0.42)
+				MDLabel:
+					text: "Любимые"
+					font_size:48
+					pos_hint:{"x":0.3,"y":0.8}
+					size_hint:(0.7,0.1)
+				MDLabel:
+				    id:search_label
+				    text:""
+					size_hint:(0.65,0.1)
+					pos_hint:{"x":0.35,"y":0.9}
+					multiline:False
+					font_size:20
+				MDIconButton2:
+					icon:"arrow-left"
+					size_hint:(0.05,0.1)
+					pos_hint:{"x":0.3,"y":0.9}
+					on_release: root.ids.manager.current="main"
+
+
+				#bottom panel with player
+				MDLabel:
+					pos_hint:{"Bottom":1}
+					size_hint:(1,prev0.height/root.height)
+					md_bg_color:(107/255,107/255,107/255,0.42)
+				MDIconButton2:
+					id:prev3
+					icon:"chevron-left-circle-outline"
+					icon_size:"48sp"
+					on_press:app.prevPress(self)
+					pos_hint:{"x":0,"Bottom":1}
+				MDIconButton2:
+					id: play3
+					icon: "arrow-right-drop-circle-outline"
+					icon_size:"48sp"
+					on_press:  app.pausePress(self)
+					pos_hint:{"x":self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: next3
+					icon:"chevron-right-circle-outline"
+					icon_size:"48sp"
+					on_press:app.nextPress(self)
+					pos_hint:{"x":2*self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: like3
+					icon:"cards-heart-outline"
+					icon_size:"48sp"
+					on_press:app.likePress(self)
+					pos_hint:{"x":6*self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: shuffle3
+					icon:"shuffle-variant"
+					icon_size:"48sp"
+					on_press:app.shufflePress(self)
+					pos_hint:{"x":3*self.width/root.width,"Bottom":1}
+				MDLabel:
+					id: text3
+					pos_hint:{"Bottom":1,"x":4*prev0.width/root.width}
+					size_hint:(1-3*prev0.width/root.width,prev0.height/root.height)
+					text:""
+					halign:"left"
+
+
+
+
+
+
+
+
+
+
+
