@@ -11,16 +11,21 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.scrollview import MDScrollView
 from kivy.metrics import dp,sp
+from kivy.core.audio import SoundLoader
+from kivy.core.audio.audio_ffpyplayer import SoundFFPy
 
 #bd imports
 import db_insert
 import db_select
+import get_song
 import other_func
 
 user='users'
 password='123456'
 
-
+pauseSec=0
+SoundLoader.register(SoundFFPy)
+song = SoundLoader.load("")
 with open('db_create.sql', 'r') as f:
     setup_sql = f.read()
 
@@ -69,50 +74,18 @@ class MDIconButton2(MDIconButton):
         if self.rounded_button:
             self._radius = self.height /10
 
-#here's methods for all screens, that have player underneath
-
-class MainTemplate(MDScreen):
-    def isLiked(self,id)->str:
-        id=id.split("text")[1]
-        if self.root.ids["shuffle"+id].icon!="shuffle-disabled":
-            return "cards-heart"
-        else:
-            return "cards-heart-outline"
-    def isPlaying(self)->str:
-        if 1!=0:
-            return "arrow-right-drop-circle-outline"
-    def isShuffleDisabled(self)->str:
-        if bd[31]!=True:
-            return "shuffle-disabled"
-        else:
-            return "shuffle-variant"
-    def prevPress(self,instance):
-        pass
-    def pausePress(self,instance):
-        pass
-    def nextPress(self,instance):
-        pass
-    def likePress(self,instance):#чел лайкнул->в бд
-        pass
-    def shufflePress(self,instance):
-        pass
+class MainPage(MDScreen):
     pass
-
-#so there's no need in code for next class
-class MainPage(MainTemplate):
+class OptionsPage(MDScreen):
     pass
-class OptionsPage(MainTemplate):
+class PlaylistPage(MDScreen):
     pass
-class PlaylistPage(MainTemplate):
-    pass
-class SearchPage(MainTemplate):
+class SearchPage(MDScreen):
     pass
 class DBMusicApp(MDApp):
-    def isLiked(self)->str:
-        if False==False:
-            return "cards-heart"
-        else:
-            return "cards-heart-outline"
+    def isLiked(self,songname)->bool:
+        res=other_func.check_favorite(setup_sql,user,password,logged_user,songname[0],songname[1])
+        return res[0][0]
     def isPlaying(self)->str:
         if 1!=0:
             return "arrow-right-drop-circle-outline"
@@ -122,15 +95,74 @@ class DBMusicApp(MDApp):
         else:
             return "shuffle-variant"
     def prevPress(self,instance):
-        pass
+        pp=self.root.ids.keys()
+        res=0
+        for i in pp:
+            if self.root.ids[i]==instance:
+                res=i
+                break
+        textId = "text" + res[4:]
+        target=self.root.ids[textId].text.split("\n")[0]
+        for i in pp:
+            if "name" in i:
+                if self.root.ids[i].text==target:
+                    if isinstance(song,SoundFFPy) and "play"+str(int(i[4:])-1) in pp and int(i[4:])-1>4:
+                        song.stop()
+                        song.unload()
+                        self.playSong(self.root.ids["play"+str(int(i[4:])-1)])
     def pausePress(self,instance):
+        if song.state=="play":
+            song.stop()
+            global pauseSec
+            pauseSec = song.get_pos()
+            instance.icon="arrow-right-drop-circle-outline"
+        else:
+
+            song.seek(pauseSec)
+            song.play()
+            instance.icon="pause-circle-outline"
         pass
     def nextPress(self,instance):
-        pass
+        pp=self.root.ids.keys()
+        res=0
+        for i in pp:
+            if self.root.ids[i]==instance:
+                res=i
+                break
+        textId = "text" + res[4:]
+        target=self.root.ids[textId].text.split("\n")[0]
+        for i in pp:
+            if "name" in i:
+                if self.root.ids[i].text==target:
+                    if isinstance(song,SoundFFPy) and "play"+str(int(i[4:])+1) in pp:
+                        song.stop()
+                        song.unload()
+                        self.playSong(self.root.ids["play"+str(int(i[4:])+1)])
     def likePress(self,instance):#чел лайкнул->в бд
-        pass
-    def shufflePress(self,instance):
-        pass
+        pp=self.root.ids.keys()
+        res=0
+        for i in pp:
+            if self.root.ids[i]==instance:
+                res=i
+                break
+        songname=[]
+        songname.append(self.root.ids["name"+res[4:]].text)
+        songname.append(self.root.ids["author"+res[4:]].text)
+        other_func.add_favorite_song(setup_sql,user,password,logged_user,songname[0],songname[1])
+        if self.isLiked(songname):
+            self.root.ids[res].icon = "cards-heart"
+        else:
+            self.root.ids[res].icon = "cards-heart-outline"
+
+    def repeatPress(self,instance):
+
+        if isinstance(song,SoundFFPy) and song.loop:
+            song.loop=False
+            instance.icon="repeat-off"
+        elif isinstance(song,SoundFFPy):
+            song.loop=True
+            instance.icon="repeat"
+
     def playSong(self,instance):
         pp=self.root.ids.keys()
         res=0
@@ -138,31 +170,63 @@ class DBMusicApp(MDApp):
             if self.root.ids[i]==instance:
                 res=i
                 break
-        for i in range(4):
+        songname=[self.root.ids["name"+str(res)[4:]].text,self.root.ids["author"+str(res)[4:]].text]
+        path = get_song.fin(setup_sql,user,password,songname[0],songname[1])
+        global song
+        song = SoundLoader.load(path)
+        song.play()
+        for i in range(5):
             self.root.ids["play"+str(i)].icon="pause-circle-outline"
-            self.root.ids["like"+str(i)].icon=self.isLiked()
-            self.root.ids["text"+str(i)].text=self.root.ids["name"+str(res)[4:]].text+"\n"+self.root.ids["author"+str(res)[4:]].text
-        pass
+            self.root.ids["text"+str(i)].text=songname[0]+"\n"+songname[1]
+    def toAllList(self,instance):
+        self.root.ids.manager.current="all"
+        self.root.ids.allPage.galllayout = MDGridLayout(cols=4, padding=2,size_hint=(1, None))
+        self.root.ids.allPage.galllayout.bind(minimum_height=self.root.ids.allPage.galllayout.setter("height"))
+
+        bd=other_func.search_song(setup_sql,user,password,logged_user,"")
+        print(bd[0])
+        for i in range(len(bd)):
+            playbtn = MDIconButton2(icon="arrow-right-drop-circle-outline", icon_size="32sp", on_press=self.playSong)
+            nameLab2 = MDLabel(text=bd[i][1], halign="center")
+            authorLab = MDLabel(text=bd[i][2], halign="center")
+            if(bd[i][3]==True):
+                like = MDIconButton2(icon="cards-heart", icon_size="32sp", on_press=self.likePress)
+            else:
+                like = MDIconButton2(icon="cards-heart-outline", icon_size="32sp", on_press=self.likePress)
+            self.root.ids.allPage.galllayout.add_widget(playbtn)
+            self.root.ids.allPage.galllayout.add_widget(nameLab2)
+            self.root.ids.allPage.galllayout.add_widget(authorLab)
+            self.root.ids.allPage.galllayout.add_widget(like)
+            self.root.ids["play"+str(i+5+len(bd)+100)]=playbtn
+            self.root.ids["name" + str(i + 5+len(bd)+100)]=nameLab2
+            self.root.ids["author" + str(i + 5+len(bd)+100)]=authorLab
+            self.root.ids["like" + str(i + 5+len(bd)+100)]=like
+        if "scroll3" in self.root.ids.keys():
+            self.root.ids.allFlayout.remove_widget(self.root.ids.scroll3)
+        self.root.ids.allPage.scroll3 = MDScrollView(size_hint=(0.7, None), size=(0.7 * self.root.width, 0.8 * self.root.height - self.root.ids.prev0.height),pos_hint={"x": 0.3, "y": self.root.ids.prev0.height / self.root.height}, bar_width=5,bar_pos_y="right", bar_color=(171 / 255, 177 / 255, 177 / 255, 0.42))
+        self.root.ids["scroll3"] = self.root.ids.allPage.scroll3
+        self.root.ids.allPage.scroll3.add_widget(self.root.ids.allPage.galllayout)
+        self.root.ids.allFlayout.add_widget(self.root.ids.allPage.scroll3)
     def toPlaylist(self,instance):
         self.root.ids.manager.current="play"
         self.root.ids.playPage.glayout = MDGridLayout(cols=4, padding=2,size_hint=(1, None))
         self.root.ids.playPage.glayout.bind(minimum_height=self.root.ids.playPage.glayout.setter("height"))
 
-        bd=main.return_favorite(setup_sql,user,password,logged_user)
+        bd=other_func.return_favorite(setup_sql,user,password,logged_user)
 
         for i in range(len(bd)):
             playbtn = MDIconButton2(icon="arrow-right-drop-circle-outline", icon_size="32sp", on_press=self.playSong)
             nameLab2 = MDLabel(text=bd[i][0], halign="center")
             authorLab = MDLabel(text=bd[i][1], halign="center")
-            like = MDIconButton2(icon="cards-heart", icon_size="32sp", on_press=self.root.ids.playPage.likePress)
+            like = MDIconButton2(icon="cards-heart", icon_size="32sp", on_press=self.likePress)
             self.root.ids.playPage.glayout.add_widget(playbtn)
             self.root.ids.playPage.glayout.add_widget(nameLab2)
             self.root.ids.playPage.glayout.add_widget(authorLab)
             self.root.ids.playPage.glayout.add_widget(like)
-            self.root.ids["play"+str(i+4)]=playbtn
-            self.root.ids["name" + str(i + 4)]=nameLab2
-            self.root.ids["author" + str(i + 4)]=authorLab
-            self.root.ids["like" + str(i + 4)]=like
+            self.root.ids["play"+str(i+5)]=playbtn
+            self.root.ids["name" + str(i + 5)]=nameLab2
+            self.root.ids["author" + str(i + 5)]=authorLab
+            self.root.ids["like" + str(i + 5)]=like
         if "scroll" in self.root.ids.keys():
             self.root.ids.flayout.remove_widget(self.root.ids.scroll)
         self.root.ids.playPage.scroll = MDScrollView(size_hint=(0.7, None), size=(0.7 * self.root.width, 0.8 * self.root.height - self.root.ids.prev0.height),pos_hint={"x": 0.3, "y": self.root.ids.prev0.height / self.root.height}, bar_width=5,bar_pos_y="right", bar_color=(171 / 255, 177 / 255, 177 / 255, 0.42))
@@ -178,19 +242,50 @@ class DBMusicApp(MDApp):
 
             self.root.ids.searchPage.searchGlayout = MDGridLayout(cols=4, padding=2, size_hint=(1, None))
             self.root.ids.searchPage.searchGlayout.bind(minimum_height=self.root.ids.searchPage.searchGlayout.setter("height"))
-            bd=main.search_song(setup_sql,user,password,logged_user,search_text)
+            bd=other_func.search_song(setup_sql,user,password,logged_user,search_text)
             for i in range(len(bd)):
                 if bd[i][3]:
-                    playbtn = MDIconButton2(icon=self.root.ids.searchPage.isPlaying(), icon_size="32sp",
-                                            on_press=self.root.ids.searchPage.pausePress)
+                    playbtn = MDIconButton2(icon="arrow-right-drop-circle-outline", icon_size="32sp", on_press=self.playSong)
                     nameLab2 = MDLabel(text=bd[i][1], halign="center")
                     authorLab = MDLabel(text=bd[i][2], halign="center")
-                    like = MDIconButton2(icon="cards-heart", icon_size="32sp",
-                                         on_press=self.root.ids.searchPage.likePress)
+                    like = MDIconButton2(icon="cards-heart", icon_size="32sp", on_press=self.likePress)
                     self.root.ids.searchPage.searchGlayout.add_widget(playbtn)
                     self.root.ids.searchPage.searchGlayout.add_widget(nameLab2)
                     self.root.ids.searchPage.searchGlayout.add_widget(authorLab)
                     self.root.ids.searchPage.searchGlayout.add_widget(like)
+                    self.root.ids["play" + str(i + 5+len(bd))] = playbtn
+                    self.root.ids["name" + str(i + 5+len(bd))] = nameLab2
+                    self.root.ids["author" + str(i + 5+len(bd))] = authorLab
+                    self.root.ids["like" + str(i + 5+len(bd))] = like
+            if "scroll2" in self.root.ids.keys():
+                self.root.ids.searchFlayout.remove_widget(self.root.ids.scroll2)
+            self.root.ids.searchPage.scroll2 = MDScrollView(size_hint=(0.7, None), size=(0.7 * self.root.width, 0.8 * self.root.height - self.root.ids.prev0.height), pos_hint={"x": 0.3,"y": self.root.ids.prev0.height / self.root.height},bar_width=5, bar_pos_y="right", bar_color=(171 / 255, 177 / 255, 177 / 255, 0.42))
+            self.root.ids["scroll2"] = self.root.ids.searchPage.scroll2
+            self.root.ids.searchPage.scroll2.add_widget(self.root.ids.searchPage.searchGlayout)
+            self.root.ids.searchFlayout.add_widget(self.root.ids.searchPage.scroll2)
+
+    def search_by_textall(self,search_text):
+        if search_text!="":
+            self.root.ids.search_label.text=search_text
+            self.root.ids.manager.current="search"
+
+            self.root.ids.searchPage.searchGlayout = MDGridLayout(cols=4, padding=2, size_hint=(1, None))
+            self.root.ids.searchPage.searchGlayout.bind(minimum_height=self.root.ids.searchPage.searchGlayout.setter("height"))
+            bd=other_func.search_song(setup_sql,user,password,logged_user,search_text)
+            for i in range(len(bd)):
+                if bd[i][3]:
+                    playbtn = MDIconButton2(icon="arrow-right-drop-circle-outline", icon_size="32sp", on_press=self.playSong)
+                    nameLab2 = MDLabel(text=bd[i][1], halign="center")
+                    authorLab = MDLabel(text=bd[i][2], halign="center")
+                    like = MDIconButton2(icon="cards-heart", icon_size="32sp", on_press=self.likePress)
+                    self.root.ids.searchPage.searchGlayout.add_widget(playbtn)
+                    self.root.ids.searchPage.searchGlayout.add_widget(nameLab2)
+                    self.root.ids.searchPage.searchGlayout.add_widget(authorLab)
+                    self.root.ids.searchPage.searchGlayout.add_widget(like)
+                    self.root.ids["play" + str(i + 5+len(bd))] = playbtn
+                    self.root.ids["name" + str(i + 5+len(bd))] = nameLab2
+                    self.root.ids["author" + str(i + 5+len(bd))] = authorLab
+                    self.root.ids["like" + str(i + 5+len(bd))] = like
             if "scroll2" in self.root.ids.keys():
                 self.root.ids.searchFlayout.remove_widget(self.root.ids.scroll2)
             self.root.ids.searchPage.scroll2 = MDScrollView(size_hint=(0.7, None), size=(0.7 * self.root.width, 0.8 * self.root.height - self.root.ids.prev0.height), pos_hint={"x": 0.3,"y": self.root.ids.prev0.height / self.root.height},bar_width=5, bar_pos_y="right", bar_color=(171 / 255, 177 / 255, 177 / 255, 0.42))
@@ -199,7 +294,6 @@ class DBMusicApp(MDApp):
             self.root.ids.searchFlayout.add_widget(self.root.ids.searchPage.scroll2)
 
     def build(self):
-        self.favorite=4
         self.theme_cls.theme_style="Dark"
         self.theme_cls.primary_palette="BlueGray"
         return Builder.load_file("design.kv")

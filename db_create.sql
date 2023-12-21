@@ -160,7 +160,7 @@ CREATE FUNCTION select_users()
 	$$
 LANGUAGE plpgsql;
 
---print for list_auther tables--
+--print for list_author tables--
 DROP FUNCTION IF EXISTS select_list_author();
 CREATE FUNCTION select_list_author()
     RETURNS TABLE(name VARCHAR) AS
@@ -305,20 +305,27 @@ $$ LANGUAGE plpgsql;
 
 
 
-DROP FUNCTION IF EXISTS add_favorite_song(varchar(20),VARCHAR(30));
-CREATE OR REPLACE FUNCTION add_favorite_song(usernames VARCHAR(20), song VARCHAR(30))
+DROP FUNCTION IF EXISTS add_favorite_song(varchar(20),VARCHAR(30),VARCHAR(30));
+CREATE OR REPLACE FUNCTION add_favorite_song(usernames VARCHAR(20), song VARCHAR(30),author VARCHAR(30))
 RETURNS VOID AS $$
 DECLARE
     user_ids INTEGER;
     song_ids INTEGER;
+    author_ids INTEGER;
 BEGIN
+
+    SELECT musicdb.public.list_author.id INTO author_ids
+    FROM musicdb.public.list_author
+    WHERE musicdb.public.list_author.name = author;
+
     SELECT musicdb.public.users.id INTO user_ids
     FROM musicdb.public.users
     WHERE musicdb.public.users.username = usernames;
 
     SELECT  musicdb.public.songs.id INTO song_ids
     FROM musicdb.public.songs
-    WHERE musicdb.public.songs.songs_name = song;
+    WHERE musicdb.public.songs.songs_name = song AND musicdb.public.songs.from_author=author_ids;
+
 
      IF EXISTS (SELECT 1 FROM musicdb.public.favorite_songs WHERE musicdb.public.favorite_songs.user_id = user_ids AND musicdb.public.favorite_songs.song_id = song_ids) THEN
         DELETE FROM musicdb.public.favorite_songs
@@ -448,4 +455,27 @@ BEGIN
             musicdb.public.songs.songs_name LIKE '%' || text || '%';
     END IF;
 END;
+$$ LANGUAGE plpgsql;
+
+DROP FUNCTION IF EXISTS search_songs_download(VARCHAR(40),varchar(30));
+CREATE OR REPLACE FUNCTION search_songs_download(song VARCHAR(40),author varchar(30) )
+RETURNS TABLE (song_name VARCHAR, song_author VARCHAR,link text) AS $$
+declare
+    author_ids integer;
+BEGIN
+    select musicdb.public.list_author.id INTO author_ids
+    from musicdb.public.list_author
+    where musicdb.public.list_author.name=author;
+    RETURN QUERY
+        SELECT
+            musicdb.public.songs.songs_name,
+            musicdb.public.list_author.name,
+            musicdb.public.songs.link
+        FROM
+             musicdb.public.songs
+        JOIN
+            musicdb.public.list_author ON musicdb.public.songs.from_author = musicdb.public.list_author.id
+        WHERE
+            musicdb.public.songs.songs_name=song and musicdb.public.songs.from_author=author_ids;
+    END;
 $$ LANGUAGE plpgsql;

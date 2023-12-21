@@ -179,6 +179,20 @@ MDFloatLayout:
 					text:"Плейлисты"
 					halign:"left"
 					font_size:20
+				#кнопка всех песен
+				MDIconButton2:
+					icon:"music"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":3*prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:app.toAllList(self)
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":3*prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Все треки"
+					halign:"left"
+					font_size:20
+					on_press:app.toAllList(self)
 
 				#right panel with playlists
 				MDLabel:
@@ -201,7 +215,7 @@ MDFloatLayout:
 					on_press:app.toPlaylist(self)
 				MDLabel:
 					pos_hint:{"Top":0.8,"x":0.3,"y":0.54}
-					text:f"Любимые\n{app.favorite} треков"
+					text:f"Любимые"
 					halign:"left"
 					font_size:18
 					size_hint:(0.2*min(root.height,root.width)/root.width,0.05)
@@ -230,16 +244,10 @@ MDFloatLayout:
 					on_press:app.nextPress(self)
 					pos_hint:{"x":2*self.width/root.width,"Bottom":1}
 				MDIconButton2:
-				    id: like0
-					icon:"cards-heart-outline"
+				    id: repeat0
+					icon:"repeat-off"
 					icon_size:"48sp"
-					on_press:app.likePress(self)
-					pos_hint:{"x":6*self.width/root.width,"Bottom":1}
-				MDIconButton2:
-				    id: shuffle0
-					icon:"shuffle-variant"
-					icon_size:"48sp"
-					on_press:app.shufflePress(self)
+					on_press:app.repeatPress(self)
 					pos_hint:{"x":3*self.width/root.width,"Bottom":1}
 				MDLabel:
 				    id: text0
@@ -284,6 +292,21 @@ MDFloatLayout:
 					halign:"left"
 					font_size:20
 					on_press:root.ids.manager.current="main"
+				#кнопка всех песен
+				MDIconButton2:
+					icon:"music"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":3*prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:app.toAllList(self)
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":3*prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Все треки"
+					halign:"left"
+					font_size:20
+					on_press:app.toAllList(self)
+
 				#right panel with playlists
 				MDLabel:
 					pos_hint:{"Top":1,"x":0.25,"y":prev0.height/root.height}
@@ -319,17 +342,12 @@ MDFloatLayout:
 					icon_size:"48sp"
 					on_press:app.nextPress(self)
 					pos_hint:{"x":2*self.width/root.width,"Bottom":1}
+
 				MDIconButton2:
-					id: like1
-					icon:"cards-heart-outline"
+					id: repeat1
+					icon:"repeat-off"
 					icon_size:"48sp"
-					on_press:app.likePress(self)
-					pos_hint:{"x":6*self.width/root.width,"Bottom":1}
-				MDIconButton2:
-					id: shuffle1
-					icon:"shuffle-variant"
-					icon_size:"48sp"
-					on_press:app.shufflePress(self)
+					on_press:app.repeatPress(self)
 					pos_hint:{"x":3*self.width/root.width,"Bottom":1}
 				MDLabel:
 					id: text1
@@ -376,6 +394,20 @@ MDFloatLayout:
 					halign:"left"
 					font_size:20
 					on_press:root.ids.manager.current="main"
+				#кнопка всех песен
+				MDIconButton2:
+					icon:"music"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":3*prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:app.toAllList(self)
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":3*prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Все треки"
+					halign:"left"
+					font_size:20
+					on_press:app.toAllList(self)
 				#right panel with playlists
 
 				MDLabel:
@@ -422,17 +454,12 @@ MDFloatLayout:
 					icon_size:"48sp"
 					on_press:app.nextPress(self)
 					pos_hint:{"x":2*self.width/root.width,"Bottom":1}
+
 				MDIconButton2:
-					id: like2
-					icon:"cards-heart-outline"
+					id: repeat2
+					icon:"repeat-off"
 					icon_size:"48sp"
-					on_press:app.likePress(self)
-					pos_hint:{"x":6*self.width/root.width,"Bottom":1}
-				MDIconButton2:
-					id: shuffle2
-					icon:"shuffle-variant"
-					icon_size:"48sp"
-					on_press:app.shufflePress(self)
+					on_press:app.repeatPress(self)
 					pos_hint:{"x":3*self.width/root.width,"Bottom":1}
 				MDLabel:
 					id: text2
@@ -479,6 +506,20 @@ MDFloatLayout:
 					halign:"left"
 					font_size:20
 					on_press:root.ids.manager.current="main"
+				#кнопка всех песен
+				MDIconButton2:
+					icon:"music"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":3*prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:app.toAllList(self)
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":3*prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Все треки"
+					halign:"left"
+					font_size:20
+					on_press:app.toAllList(self)
 				#right panel with playlists
 
 				MDLabel:
@@ -528,19 +569,122 @@ MDFloatLayout:
 					on_press:app.nextPress(self)
 					pos_hint:{"x":2*self.width/root.width,"Bottom":1}
 				MDIconButton2:
-					id: like3
-					icon:"cards-heart-outline"
+					id: repeat3
+					icon:"repeat-off"
 					icon_size:"48sp"
-					on_press:app.likePress(self)
-					pos_hint:{"x":6*self.width/root.width,"Bottom":1}
-				MDIconButton2:
-					id: shuffle3
-					icon:"shuffle-variant"
-					icon_size:"48sp"
-					on_press:app.shufflePress(self)
+					on_press:app.repeatPress(self)
 					pos_hint:{"x":3*self.width/root.width,"Bottom":1}
 				MDLabel:
 					id: text3
+					pos_hint:{"Bottom":1,"x":4*prev0.width/root.width}
+					size_hint:(1-3*prev0.width/root.width,prev0.height/root.height)
+					text:""
+					halign:"left"
+	    MDScreen:
+	        name:"all"
+	        id:allPage
+			MDFloatLayout:
+				size:root.width,root.height
+				id:allFlayout
+				#left panel with menu
+
+				MDLabel:
+					pos_hint:{"Top":1,"x":0,"y":prev0.height/root.height}
+					size_hint:(0.25,1-prev0.height/root.height)
+					md_bg_color:(130/255,130/255,130/255,0.42)
+				MDIconButton2:
+					icon:"cog-outline"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:root.ids.manager.current="opt"
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Настройки"
+					halign:"left"
+					font_size:20
+					on_press:root.ids.manager.current="opt"
+				#кнопка плейлистов
+				MDIconButton2:
+					icon:"music-box-multiple-outline"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":2*prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+					on_press:root.ids.manager.current="main"
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":2*prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Плейлисты"
+					halign:"left"
+					font_size:20
+					on_press:root.ids.manager.current="main"
+				#кнопка всех песен
+				MDIconButton2:
+					icon:"music"
+					icon_size:"32sp"
+					pos_hint:{"x":0,"y":3*prev0.height/root.height}
+					size_hint:(0.05,50/root.height)
+				MDFlatButton:
+					pos_hint:{"x":0.05,"y":3*prev0.height/root.height}
+					size_hint:(0.2,50/root.height)
+					text:"Все треки"
+					halign:"left"
+					font_size:20
+				#right panel with playlists
+
+				MDLabel:
+					pos_hint:{"Top":1,"x":0.25,"y":prev0.height/root.height}
+					size_hint:(0.75,1-prev0.height/root.height)
+					md_bg_color:(71/255,71/255,71/255,0.42)
+				MDLabel:
+					text: "Все треки"
+					font_size:48
+					pos_hint:{"x":0.3,"y":0.8}
+					size_hint:(0.7,0.1)
+				MDTextField:
+				    id:search_textall
+					size_hint:(0.65,0.1)
+					pos_hint:{"x":0.35,"y":0.9}
+					multiline:False
+				MDIconButton2:
+					icon:"magnify"
+					size_hint:(0.05,0.1)
+					pos_hint:{"x":0.3,"y":0.9}
+					on_release:app.search_by_textall(search_text.textall)
+
+
+				#bottom panel with player
+				MDLabel:
+					pos_hint:{"Bottom":1}
+					size_hint:(1,prev0.height/root.height)
+					md_bg_color:(107/255,107/255,107/255,0.42)
+				MDIconButton2:
+					id:prev4
+					icon:"chevron-left-circle-outline"
+					icon_size:"48sp"
+					on_press:app.prevPress(self)
+					pos_hint:{"x":0,"Bottom":1}
+				MDIconButton2:
+					id: play4
+					icon: "arrow-right-drop-circle-outline"
+					icon_size:"48sp"
+					on_press:  app.pausePress(self)
+					pos_hint:{"x":self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: next4
+					icon:"chevron-right-circle-outline"
+					icon_size:"48sp"
+					on_press:app.nextPress(self)
+					pos_hint:{"x":2*self.width/root.width,"Bottom":1}
+				MDIconButton2:
+					id: repeat4
+					icon:"repeat-off"
+					icon_size:"48sp"
+					on_press:app.repeatPress(self)
+					pos_hint:{"x":3*self.width/root.width,"Bottom":1}
+				MDLabel:
+					id: text4
 					pos_hint:{"Bottom":1,"x":4*prev0.width/root.width}
 					size_hint:(1-3*prev0.width/root.width,prev0.height/root.height)
 					text:""

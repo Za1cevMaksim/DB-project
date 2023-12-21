@@ -43,7 +43,6 @@ def update_socialmedia(setup_sql,user,password,author_name,*args):
     conn.commit()
 
 def insert_songs(setup_sql,user,password,songs_name,author_id,link):
-    link='NULL'
 
     conn = psycopg2.connect(dbname="musicdb", user=user, password=password, host="127.0.0.1")
     cr = conn.cursor()

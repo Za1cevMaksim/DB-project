@@ -84,12 +84,12 @@ def update_user_theme(setup_sql,user,password,name):
         cr.close()
     conn.commit()
 
-def add_favorite_song(setup_sql,user,password,username,songname):
+def add_favorite_song(setup_sql,user,password,username,songname,author):
     conn = psycopg2.connect(dbname="musicdb", user=user, password=password, host="127.0.0.1")
     cr = conn.cursor()
     try:
         cr.execute(setup_sql)
-        cr.execute("SELECT add_favorite_song(%s,%s)",(username,songname,))
+        cr.execute("SELECT add_favorite_song(%s,%s,%s)",(username,songname,author,))
     finally:
         cr.close()
     conn.commit()
@@ -129,6 +129,17 @@ def search_song(setup_sql,user,password,username,text):
         cr.close()
     conn.commit()
     return ans
+def download_song(setup_sql,user,password,song,author):
+    conn = psycopg2.connect(dbname="musicdb", user=user, password=password, host="127.0.0.1")
+    cr = conn.cursor()
+    try:
+        cr.execute(setup_sql)
+        cr.execute("SELECT * from musicdb.public.search_songs_download(%s,%s)", (song,author, ))
+        ans = cr.fetchall()
+    finally:
+        cr.close()
+    conn.commit()
+    return ans
 
 user='users'
 password='123456'
@@ -139,67 +150,67 @@ with open('db_create.sql', 'r') as f:
 db_name="musicdb"
 
     #create db
-    #db_create.database_create(setup_sql,user, password, db_name) #database create
-    #db_create.tables_create(setup_sql,user,password) #create table
-    #db_insert.use_trigger()
+#db_create.database_create(setup_sql,user, password, db_name) #database create
+#db_create.tables_create(setup_sql,user,password) #create table
+#db_insert.use_trigger()
 
 
-    # all insert
-    #db_insert.insert_users(setup_sql,'alex','1234') #add user
-    #db_insert.insert_users(setup_sql, 'maxim', '123456')  # add user
-    #print(db_select.print_users(setup_sql))
-    #дальше заполнение
-    #update_user_theme(setup_sql,user,password,'maxim')
-    #print(db_select.print_users(setup_sql))
-    #db_insert.insert_list_author(setup_sql,'eminem')
-    #db_insert.insert_list_author(setup_sql, 'oxxy')
-    #db_insert.insert_songs(setup_sql,'123',1,'\\way')
-    #db_insert.insert_songs(setup_sql,'235',1,'\\way2')
-    #db_insert.insert_songs(setup_sql, '123', 2, '\\way')
-    #drop from table
-    #drop_songs(setup_sql)
-    #db_create.drop_database(setup_sql, db_name) #suddenly doesnt work/dont now whats wrong
+# all insert
+#db_insert.insert_users(setup_sql,user, password,'alex','1234') #add user
+#db_insert.insert_users(setup_sql, user, password,'maxim', '123456')  # add user
+#print(db_select.print_users(setup_sql))
+#дальше заполнение
+#update_user_theme(setup_sql,user,password,'maxim')
+#print(db_select.print_users(setup_sql))
+#db_insert.insert_list_author(setup_sql,user, password,'eminem')
+#db_insert.insert_list_author(setup_sql,user, password, 'oxxy')
+#db_insert.insert_songs(setup_sql,user, password,'123',1,'\\way')
+#db_insert.insert_songs(setup_sql,user, password,'235',1,'\\way2')
+#db_insert.insert_songs(setup_sql,user, password, '123', 2, '\\way')
+#drop from table
+#drop_songs(setup_sql)
+#db_create.drop_database(setup_sql, db_name) #suddenly doesnt work/dont now whats wrong
 
-   # db_insert.insert_list_author(setup_sql,'Леонтьев')
-   # db_insert.insert_list_author(setup_sql, 'PinckFloyd')
-    #db_insert.insert_songs(setup_sql, 'Выпьем за любовь', 3, '\\way')
-    #db_insert.insert_songs(setup_sql, 'Владимерский централ', 3, '\\way')
-    #db_insert.insert_songs(setup_sql, '4536', 4, '\\way')
-    #db_insert.insert_songs(setup_sql,'23252635',4,'\\way2')
-    #add_favorite_song(setup_sql, user, password, 'maxim', 'Выпьем за любовь')
-    #add_favorite_song(setup_sql, user, password, 'maxim', 'Владимерский централ')
-    #add_favorite_song(setup_sql, user, password, 'maxim', '23252635')
-    # all prints
-    #print(db_select.print_users(setup_sql))
-    #print(db_select.print_list_author(setup_sql))
-    #print(db_select.print_songs(setup_sql))
-    #print(db_select.print_socailmedia(setup_sql))
-    #print(db_select.print_favorite_songs(setup_sql))
+#db_insert.insert_list_author(setup_sql,user, password,'Леонтьев')
+#db_insert.insert_list_author(setup_sql,user, password, 'PinckFloyd')
+#db_insert.insert_songs(setup_sql,user, password, 'Выпьем за любовь', 3, '\\way')
+#db_insert.insert_songs(setup_sql,user, password, 'Владимерский централ', 3, '\\way')
+#db_insert.insert_songs(setup_sql,user, password, '4536', 4, '\\way')
+#db_insert.insert_songs(setup_sql,user, password,'23252635',4,'\\way2')
+#add_favorite_song(setup_sql, user, password, 'maxim', 'Выпьем за любовь')
+#add_favorite_song(setup_sql, user, password, 'maxim', 'Владимерский централ')
+#add_favorite_song(setup_sql, user, password, 'maxim', '23252635')
+# all prints
+#print(db_select.print_users(setup_sql))
+#print(db_select.print_list_author(setup_sql))
+#print(db_select.print_songs(setup_sql))
+#print(db_select.print_socailmedia(setup_sql))
+#print(db_select.print_favorite_songs(setup_sql))
 
-    #add_favorite_song(setup_sql,user,password,'maxim','123')
+#add_favorite_song(setup_sql,user,password,'maxim','123')
 
-    #print(check_favorite(setup_sql,user,password,'maxim','123','eminem'))
-    #print(check_favorite(setup_sql,user,password,'maxim','123','oxxy'))
-    #print(check_favorite(setup_sql,user,password,'alex','123','eminem'))
+#print(check_favorite(setup_sql,user,password,'maxim','123','eminem'))
+#print(check_favorite(setup_sql,user,password,'maxim','123','oxxy'))
+#print(check_favorite(setup_sql,user,password,'alex','123','eminem'))
 
-    #print(return_favorite(setup_sql,user,password,'maxim'))
-    #print(db_select.print_favorite_songs(setup_sql))
-    #add_favorite_song(setup_sql, user, password, 'maxim', '123')
-    #print(db_select.print_favorite_songs(setup_sql))
-    #add_favorite_song(setup_sql, user, password, 'maxim', '123')
-    #print(db_select.print_favorite_songs(setup_sql))
-    #update status
-    #update_songs_status(setup_sql,'123',user,password)
-    #print(db_select.print_songs(setup_sql))
+#print(return_favorite(setup_sql,user,password,'maxim'))
+#print(db_select.print_favorite_songs(setup_sql))
+#add_favorite_song(setup_sql, user, password, 'maxim', '123')
+#print(db_select.print_favorite_songs(setup_sql))
+#add_favorite_song(setup_sql, user, password, 'maxim', '123')
+#print(db_select.print_favorite_songs(setup_sql))
+#update status
+#update_songs_status(setup_sql,'123',user,password)
+#print(db_select.print_songs(setup_sql))
 
-    #drop_all(setup_sql,user,password)
-    #print(find_author_id(setup_sql,user,password,'oxx'))
-    #delete_author(setup_sql,user,password,'eminem')
-    #db_insert.update_socialmedia(setup_sql,'oxxy','instagram','vk')
-    #print(db_select.print_socailmedia(setup_sql))
+#drop_all(setup_sql,user,password)
+#print(find_author_id(setup_sql,user,password,'oxx'))
+#delete_author(setup_sql,user,password,'eminem')
+#db_insert.update_socialmedia(setup_sql,'oxxy','instagram','vk')
+#print(db_select.print_socailmedia(setup_sql))
 
 
-    #print(search_song(setup_sql,user,password,'maxim',''))
+#print(search_song(setup_sql,user,password,'maxim',''))
 
 
 
