@@ -18,6 +18,7 @@ import db_insert
 import db_select
 import get_song
 import other_func
+import db_create
 
 
 db_name="musicdb"
@@ -320,6 +321,5 @@ if __name__=='__main__':
         db_insert.use_trigger()
         for i in list_author:
             get_song.fin2(i,setup_sql,user,password)
-
     app=DBMusicApp()
     app.run()
