@@ -13,7 +13,6 @@ from kivy.core.audio import SoundLoader
 from kivy.core.audio.audio_ffpyplayer import SoundFFPy
 
 #bd imports
-import db_create
 import db_insert
 import db_select
 import get_song
@@ -291,7 +290,10 @@ class DBMusicApp(MDApp):
                 playbtn = MDIconButton2(icon="arrow-right-drop-circle-outline", icon_size="32sp", on_press=self.playSong)
                 nameLab2 = MDLabel(text=bd[i][1], halign="center")
                 authorLab = MDLabel(text=bd[i][2], halign="center")
-                like = MDIconButton2(icon="cards-heart", icon_size="32sp", on_press=self.likePress)
+                if (bd[i][3] == True):
+                    like = MDIconButton2(icon="cards-heart", icon_size="32sp", on_press=self.likePress)
+                else:
+                    like = MDIconButton2(icon="cards-heart-outline", icon_size="32sp", on_press=self.likePress)
                 self.root.ids.searchPage.searchGlayout.add_widget(playbtn)
                 self.root.ids.searchPage.searchGlayout.add_widget(nameLab2)
                 self.root.ids.searchPage.searchGlayout.add_widget(authorLab)
@@ -315,7 +317,7 @@ class DBMusicApp(MDApp):
 
 if __name__=='__main__':
     list_author = ["eminem", "oxxxymiron"]
-    if not(other_func.is_db_exists(db_name)):
+    if not(other_func.is_db_exists(setup_sql,db_name)):
         db_create.database_create(setup_sql, user, password, db_name)
         db_create.tables_create(setup_sql, user, password)
         db_insert.use_trigger()

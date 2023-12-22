@@ -4,6 +4,7 @@ import db_create
 import db_select
 
 
+
 def drop_songs(setup_sql,user,password):
     conn = psycopg2.connect(dbname="musicdb", user=user, password=password, host="127.0.0.1")
     cr = conn.cursor()
@@ -141,13 +142,14 @@ def download_song(setup_sql,user,password,song,author):
     conn.commit()
     return ans
 
-def is_db_exists(dbname):
+def is_db_exists(setup_sql,dbname):
     connect = None
     try:
         connect = psycopg2.connect(dbname="postgres", host="127.0.0.1", user="postgres", password="1234")
         connect.autocommit = True
         with connect.cursor() as cur:
-            cur.execute("select check_db_exists(%s)", (dbname,))
+            cur.execute(setup_sql)
+            cur.execute("SELECT check_db_exists(%s::text)", (dbname,))
             exists = cur.fetchone()
             return exists if exists is None else exists[0]
     finally:
