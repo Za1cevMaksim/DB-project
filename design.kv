@@ -255,6 +255,11 @@ MDFloatLayout:
 					size_hint:(1-3*prev0.width/root.width,prev0.height/root.height)
 					text:""
 					halign:"left"
+				MDProgressBar:
+				    pos_hint:{"Bottom":1,"y":prev0.height/root.height-10}
+				    size_hint:(1,10/root.height)
+				    value:app.getValue()
+				    color:app.theme_cls.accent_color
 
 		OptionsPage:
 			name:"opt"
@@ -318,6 +323,36 @@ MDFloatLayout:
 					font_size:48
 					pos_hint:{"x":0.3,"y":0.8}
 					size_hint:(0.7,0.2)
+				MDLabel:
+					text: "Тема"
+					font_size:20
+					pos_hint:{"x":0.35,"y":0.7}
+					size_hint:(0.1,0.1)
+				Button:
+					id:themeid
+					text:""
+					font_size:20
+					pos_hint:{"x":0.45,"y":0.7}
+					size_hint:(0.1,0.1)
+					on_press:app.themeChange(self)
+					background_color:(71/255,71/255,71/255,0.42)
+				Button:
+					text:"Выйти с аккаунта"
+					font_size:20
+					pos_hint:{"x":0.35,"y":0.58}
+					size_hint:(0.2,0.1)
+					on_press:root.ids.manager.current="login"
+					background_color:(71/255,71/255,71/255,0.42)
+				Button:
+					text:"Удалить аккаунт"
+					font_size:20
+					pos_hint:{"x":0.35,"y":0.46}
+					size_hint:(0.2,0.1)
+					on_press:root.ids.manager.current="del"
+					background_color:(71/255,71/255,71/255,0.42)
+
+
+
 
 				#bottom panel with player
 				MDLabel:
@@ -527,7 +562,7 @@ MDFloatLayout:
 					size_hint:(0.75,1-prev0.height/root.height)
 					md_bg_color:(71/255,71/255,71/255,0.42)
 				MDLabel:
-					text: "Любимые"
+					text: "Результаты поиска"
 					font_size:48
 					pos_hint:{"x":0.3,"y":0.8}
 					size_hint:(0.7,0.1)
@@ -651,7 +686,7 @@ MDFloatLayout:
 					icon:"magnify"
 					size_hint:(0.05,0.1)
 					pos_hint:{"x":0.3,"y":0.9}
-					on_release:app.search_by_textall(search_text.textall)
+					on_release:app.search_by_textall(search_textall.text)
 
 
 				#bottom panel with player
@@ -689,9 +724,32 @@ MDFloatLayout:
 					size_hint:(1-3*prev0.width/root.width,prev0.height/root.height)
 					text:""
 					halign:"left"
-
-
-
+		MDScreen:
+			name:"del"
+			id:delPage
+			MDFloatLayout:
+				MDLabel:
+					pos_hint:{"Top":1,"x":0,"y":0}
+					size_hint:(1,1)
+					md_bg_color:(130/255,130/255,130/255,0.42)
+				MDLabel:
+					pos_hint:{"center_x":0.5,"center_y":0.5}
+					size_hint:(0.2,0.2)
+					text:"Вы уверены?"
+				Button:
+					font_size:20
+					pos_hint:{"x":0.3,"y":0.3}
+					size_hint:(0.1,0.1)
+					on_press:app.deleteAcc(self)
+					background_color:(71/255,71/255,71/255,0.42)
+					text:"Да"
+				Button:
+					font_size:20
+					pos_hint:{"x":0.5,"y":0.3}
+					size_hint:(0.1,0.1)
+					on_press:root.ids.manager.current="opt"
+					background_color:(71/255,71/255,71/255,0.42)
+					text:"Go back"
 
 
 
