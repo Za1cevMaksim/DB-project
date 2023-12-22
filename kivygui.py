@@ -1,6 +1,4 @@
 #design imports
-import kivy
-import kivymd
 from kivymd.app import MDApp
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
@@ -14,12 +12,12 @@ from kivy.metrics import dp,sp
 from kivy.core.audio import SoundLoader
 from kivy.core.audio.audio_ffpyplayer import SoundFFPy
 
-import db_create
 #bd imports
 import db_insert
 import db_select
 import get_song
 import other_func
+import db_create
 
 db_name="musicdb"
 user='users'
@@ -46,6 +44,7 @@ class LoginPage(MDScreen):
             if(login == users[i][0] and password==users[i][1]):
                 global logged_user
                 logged_user = users[i][0]
+                app.root.ids.themeid.text = app.theme_cls.theme_style
                 app.root.ids.manager.transition=WipeTransition()
                 app.theme_cls.theme_style=users[i][2]
                 return True
@@ -85,17 +84,27 @@ class PlaylistPage(MDScreen):
 class SearchPage(MDScreen):
     pass
 class DBMusicApp(MDApp):
+    def deleteAcc(self,instance):
+        app.root.ids.manager.current="login"
+        other_func.delete_user(setup_sql,user,password,logged_user)
+    def getValue(self):
+        if isinstance(song,SoundFFPy):
+            return song.get_pos()/song._get_length()
+        else:
+            return 0
+    def themeChange(self,instance):
+        if app.theme_cls.theme_style=="Dark":
+            app.theme_cls.theme_style="Light"
+            self.root.ids.themeid.text="Light"
+            other_func.update_user_theme(setup_sql,user,password,logged_user)
+        else:
+            app.theme_cls.theme_style="Dark"
+            self.root.ids.themeid.text = "Dark"
+            other_func.update_user_theme(setup_sql, user, password, logged_user)
+
     def isLiked(self,songname)->bool:
         res=other_func.check_favorite(setup_sql,user,password,logged_user,songname[0],songname[1])
         return res[0][0]
-    def isPlaying(self)->str:
-        if 1!=0:
-            return "arrow-right-drop-circle-outline"
-    def isShuffleDisabled(self)->str:
-        if True!=True:
-            return "shuffle-disabled"
-        else:
-            return "shuffle-variant"
     def prevPress(self,instance):
         pp=self.root.ids.keys()
         res=0
@@ -175,6 +184,9 @@ class DBMusicApp(MDApp):
         songname=[self.root.ids["name"+str(res)[4:]].text,self.root.ids["author"+str(res)[4:]].text]
         path = get_song.fin(setup_sql,user,password,songname[0],songname[1])
         global song
+        if isinstance(song,SoundFFPy):
+            song.stop()
+            song.unload()
         song = SoundLoader.load(path)
         song.play()
         for i in range(5):
@@ -299,9 +311,8 @@ class DBMusicApp(MDApp):
         self.theme_cls.theme_style="Dark"
         self.theme_cls.primary_palette="BlueGray"
         return Builder.load_file("design.kv")
-
 if __name__=='__main__':
-    list_author = ["eminem", "oxxxymiron", "pink floud"]
+    list_author = ["eminem", "oxxxymiron"]
 
     if not(other_func.is_db_exists(db_name)):
         print('Create')
@@ -310,6 +321,5 @@ if __name__=='__main__':
         db_insert.use_trigger()
         for i in list_author:
             get_song.fin2(i,setup_sql,user,password)
-
     app=DBMusicApp()
     app.run()
