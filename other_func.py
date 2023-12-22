@@ -147,7 +147,7 @@ def is_db_exists(dbname):
         connect = psycopg2.connect(dbname="postgres", host="127.0.0.1", user="postgres", password="1234")
         connect.autocommit = True
         with connect.cursor() as cur:
-            cur.execute("select check_db_exists(%s::varchar)", (dbname,))
+            cur.execute("select check_db_exists(%s)", (dbname,))
             exists = cur.fetchone()
             return exists if exists is None else exists[0]
     finally:
